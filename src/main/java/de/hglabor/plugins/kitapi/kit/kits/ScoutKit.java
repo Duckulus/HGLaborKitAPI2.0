@@ -3,15 +3,19 @@ package de.hglabor.plugins.kitapi.kit.kits;
 import com.google.common.collect.ImmutableMap;
 import de.hglabor.plugins.kitapi.KitApi;
 import de.hglabor.plugins.kitapi.kit.AbstractKit;
+import de.hglabor.plugins.kitapi.kit.events.KitEvent;
 import de.hglabor.plugins.kitapi.kit.settings.IntArg;
 import de.hglabor.plugins.kitapi.kit.settings.PotionEffectArg;
 import de.hglabor.plugins.kitapi.player.KitPlayer;
 import de.hglabor.utils.localization.Localization;
 import de.hglabor.utils.noriskutils.ChatUtils;
 import de.hglabor.utils.noriskutils.TimeConverter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
@@ -43,6 +47,20 @@ public class ScoutKit extends AbstractKit {
         this.timeLeftKey = this.getName() + "timeLeft";
         this.setMainKitItem(createScoutPotion(), potionAmount);
         this.setDisplayItem(createScoutPotion());
+    }
+
+    @KitEvent
+    @Override
+    public void onEntityDamage(EntityDamageEvent e){
+        if(!(e.getEntity() instanceof Player))return;
+        Player player = (Player) e.getEntity();
+        if(!e.getCause().equals(EntityDamageEvent.DamageCause.FALL))return;
+        if (player.hasPotionEffect(PotionEffectType.SPEED))
+        {
+            if(e.getFinalDamage()>4){
+                e.setDamage(4);
+            }
+        }
     }
 
     @Override
